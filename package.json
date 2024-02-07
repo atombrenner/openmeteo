@@ -1,0 +1,35 @@
+{
+  "name": "@atombrenner/openmeteo",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [
+    "typescript",
+    "openmeteo",
+    "weather",
+    "forecast"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atombrenner/openmeteo.git"
+  },
+  "type": "commonjs",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "files": [
+    "dist/main.*"
+  ],
+  "scripts": {
+    "prepare": "tsc"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "@openmeteo/sdk": "^1.9.0",
+    "flatbuffers": "^23.5.26"
+  }
+}

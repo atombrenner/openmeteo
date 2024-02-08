@@ -2,8 +2,8 @@
   "compilerOptions": {
     "lib": ["ES2022"],
     "target": "ES2022",
-    "module": "CommonJS",
-    "esModuleInterop": true,
+    "module": "Node16",
+    "esModuleInterop": false,
     "moduleDetection": "force",
     "isolatedModules": true,
     "declaration": true,
@@ -12,6 +12,8 @@
     "removeComments": true,
     "skipLibCheck": true,
     "strict": true,
+    "verbatimModuleSyntax": false,
+
     // "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,

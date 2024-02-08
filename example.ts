@@ -28,15 +28,15 @@ async function example2() {
 
   const hourly = ['temperature_2m'] as const // as const is necessary to infer the type later
   const params = weatherDataParams({
+    hourly,
+    current: ['wind_speed_10m'],
     latitude: 49.0699764,
     longitude: 11.614277,
     timezone: 'Europe/Berlin',
     forecast_days: 3,
-    hourly,
-    current: ['wind_speed_10m'],
   })
   const data = await fetchWeatherData(params)
-  const temperature = data.hourly.temperature_2m
+  const temperature = data.hourly.
   // const err = data.hourly.cloud_cover_high[0] // type error
   const current_wind_speed = data.current.wind_speed_10m
 

@@ -36,7 +36,7 @@ async function example2() {
     forecast_days: 3,
   })
   const data = await fetchWeatherData(params)
-  const temperature = data.hourly.
+  const temperature = data.hourly.temperature_2m
   // const err = data.hourly.cloud_cover_high[0] // type error
   const current_wind_speed = data.current.wind_speed_10m
 

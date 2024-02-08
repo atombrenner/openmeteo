@@ -1,11 +1,13 @@
 import { ByteBuffer } from 'flatbuffers'
 import { WeatherApiResponse } from '@openmeteo/sdk/weather-api-response'
-import { writeFileSync, readFileSync } from 'fs'
 import type { VariablesWithTime } from '@openmeteo/sdk/variables-with-time'
 
 // see https://open-meteo.com/en/docs/dwd-api for a documentation of weather variables
 export type HourlyVariable =
   | 'temperature_2m'
+  | 'temperature_80m'
+  | 'temperature_120m'
+  | 'temperature_180m'
   | 'relative_humidity_2m'
   | 'dew_point_2m'
   | 'apparent_temperature'
@@ -89,9 +91,9 @@ export type CurrentVariable =
   | 'wind_gusts_10m'
 
 export interface WeatherDataParams<
-  H extends HourlyVariable,
-  D extends DailyVariable,
-  C extends CurrentVariable,
+  H extends HourlyVariable = HourlyVariable,
+  D extends DailyVariable = DailyVariable,
+  C extends CurrentVariable = CurrentVariable,
 > {
   latitude: number
   longitude: number
@@ -129,13 +131,12 @@ export interface WeatherData<
   longitude: number
   elevation: number
   utc_offset_seconds: number
-  // TODO: check more properties from the json result
   hourly: Optional<H, TimeSeries<H>>
   daily: Optional<D, TimeSeries<D>>
   current: Optional<C, Current<C>>
 }
 
-class RetryableWeatherDataError extends Error {
+export class RetryableWeatherDataError extends Error {
   constructor(msg: string, cause?: unknown) {
     super(msg, { cause })
   }
@@ -149,7 +150,17 @@ export const fetchWeatherData = async <
 >(
   params: WeatherDataParams<H, D, C>,
   api = 'https://api.open-meteo.com/v1/forecast',
-): Promise<WeatherData<H, D, C>> => {
+): Promise<WeatherData<H, D, C>> => _parse(await _fetch(params, api), params)
+
+export const _fetch = async <
+  // assigning never as default type makes infer work with optional params
+  H extends HourlyVariable = never,
+  D extends DailyVariable = never,
+  C extends CurrentVariable = never,
+>(
+  params: WeatherDataParams<H, D, C>,
+  api: string,
+) => {
   const searchParams = new URLSearchParams(Object.entries(params).map(([k, v]) => [k, `${v}`]))
   searchParams.set('format', 'flatbuffers')
   const url = `${api}?${searchParams}`
@@ -167,12 +178,10 @@ export const fetchWeatherData = async <
   }
   if (status !== 200) throw new RetryableWeatherDataError(`received unexpected status ${status}`)
 
-  const buffer = new Uint8Array(await response.arrayBuffer())
-  // writeFileSync('example.fb', buffer) // store examples for tests
-  return parseResponse(buffer, params)
+  return new Uint8Array(await response.arrayBuffer())
 }
 
-const parseResponse = <
+export const _parse = <
   H extends HourlyVariable,
   D extends DailyVariable,
   C extends CurrentVariable,
@@ -195,12 +204,12 @@ const parseResponse = <
 
   const hourly = r.hourly()
   if (hourly && params.hourly) {
-    result.hourly = parseTimeSeries(hourly, params.hourly)
+    result.hourly = _parseTimeSeries(hourly, params.hourly)
   }
 
   const daily = r.daily()
   if (daily && params.daily) {
-    result.daily = parseTimeSeries(daily, params.daily)
+    result.daily = _parseTimeSeries(daily, params.daily)
   }
 
   const current = r.current()
@@ -215,7 +224,10 @@ const parseResponse = <
   return result
 }
 
-const parseTimeSeries = <T extends string>(ts: VariablesWithTime, params: readonly T[]) => {
+export const _parseTimeSeries = <T extends string>(
+  ts: VariablesWithTime,
+  params: readonly T[],
+): Optional<T, TimeSeries<T>> => {
   const timeStart = Number(ts.time())
   const timeEnd = Number(ts.timeEnd())
   const interval = Number(ts.interval())

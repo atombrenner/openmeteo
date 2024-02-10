@@ -2,7 +2,7 @@
 
 ![version](https://img.shields.io/npm/v/@atombrenner/openmeteo)
 ![issues](https://img.shields.io/github/issues/atombrenner/openmeteo)
-![build](https://github.com/atombrenner/openmeteo/actions/workflows/release.yml/badge.svg)
+![build](https://github.com/atombrenner/openmeteo/actions/workflows/main.yaml/badge.svg?branch=main)
 
 This is a typesafe client for the [Open-Meteo Weather Forecast API](https://open-meteo.com/en/docs).
 The Open-Meteo API gives you unified access to high-precision weather forecast data from

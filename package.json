@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "test": "bun test .ts",
-    "prepare": "tsc"
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/bun": "latest",

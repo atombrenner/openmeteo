@@ -1,22 +1,18 @@
 import { describe, it, expect } from 'bun:test'
 import { _parse } from './main'
-import { loadBuffer, params } from './test-data/fetch-data'
-
-const day = '2024-02-08'
-
-const isParamFile = (file: string): file is keyof typeof params => file in params
+import { loadBuffer, params } from './test-data/params'
 
 const makeLocalTimeFn = (utc_offset: number) => (ts: number) =>
   new Date((ts + utc_offset) * 1000).toISOString().substring(0, 19).replace('T', ' ')
 
 const round = (n: number) => +n.toFixed(1)
-const hours = (d: number) => round(d / 3600)
-
 const take7Rounded = (v: number[]) => v.slice(0, 7).map(round)
+const hours = (d: number) => round(d / 3600)
 
 describe('parse flatbuffers response', () => {
   it.each(Object.keys(params))('should parse common parameters for %p params', (file) => {
-    const buffer = loadBuffer(file, day)
+    const buffer = loadBuffer(file, '2024-02-08')
+    const isParamFile = (file: string): file is keyof typeof params => file in params
     if (!isParamFile(file)) throw Error('invalid parameter set')
     const { latitude, longitude, elevation, utc_offset_seconds } = _parse(buffer, params[file])
     expect({ latitude, longitude, elevation, utc_offset_seconds }).toEqual({
@@ -28,7 +24,7 @@ describe('parse flatbuffers response', () => {
   })
 
   it('should parse hourly time series', () => {
-    const buffer = loadBuffer('hourly', day)
+    const buffer = loadBuffer('hourly', '2024-02-08')
     const response = _parse(buffer, params.hourly)
 
     expect(response.daily).toBeUndefined()
@@ -37,8 +33,8 @@ describe('parse flatbuffers response', () => {
     const toLocalTime = makeLocalTimeFn(response.utc_offset_seconds)
     const { hourly } = response
     expect(hourly.time.length).toEqual(7 * 24)
-    expect(toLocalTime(hourly.time[0])).toEqual(`${day} 00:00:00`)
-    expect(toLocalTime(hourly.time[1])).toEqual(`${day} 01:00:00`)
+    expect(toLocalTime(hourly.time[0])).toEqual(`2024-02-08 00:00:00`)
+    expect(toLocalTime(hourly.time[1])).toEqual(`2024-02-08 01:00:00`)
     expect(toLocalTime(hourly.time[7 * 24 - 1])).toEqual(`2024-02-14 23:00:00`)
 
     const { temperature_2m, wind_speed_10m, apparent_temperature } = hourly
@@ -50,7 +46,7 @@ describe('parse flatbuffers response', () => {
   })
 
   it('should parse daily time series', () => {
-    const buffer = loadBuffer('daily', day)
+    const buffer = loadBuffer('daily', '2024-02-08')
     const response = _parse(buffer, params.daily)
 
     expect(response.hourly).toBeUndefined()
@@ -59,7 +55,7 @@ describe('parse flatbuffers response', () => {
     const toLocalTime = makeLocalTimeFn(response.utc_offset_seconds)
     const { daily } = response
     expect(daily.time.length).toEqual(7)
-    expect(toLocalTime(daily.time[0])).toEqual(`${day} 00:00:00`)
+    expect(toLocalTime(daily.time[0])).toEqual(`2024-02-08 00:00:00`)
     expect(toLocalTime(daily.time[1])).toEqual(`2024-02-09 00:00:00`)
     expect(toLocalTime(daily.time[6])).toEqual(`2024-02-14 00:00:00`)
 

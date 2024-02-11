@@ -3,7 +3,6 @@ name: build & test
 on:
   push:
     branches:
-      - main
 
 jobs:
   build-and-test:
@@ -15,3 +14,4 @@ jobs:
       - run: bun install
       - run: bunx tsc
       - run: bun test
+      - run: npm pack

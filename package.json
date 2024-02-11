@@ -8,21 +8,25 @@
     "weather",
     "forecast"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Christian Rodemeyer",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atombrenner/openmeteo.git"
+    "url": "git+https://github.com/atombrenner/openmeteo.git"
   },
   "type": "commonjs",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "files": [
-    "dist/main.*"
+    "dist/main.js",
+    "dist/main.js.map",
+    "dist/main.d.ts",
+    "dist/main.d.ts.map"
   ],
   "scripts": {
     "test": "bun test .ts",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "tsc && bun test .ts"
   },
   "devDependencies": {
     "@types/bun": "latest",

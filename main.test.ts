@@ -14,12 +14,14 @@ describe('parse flatbuffers response', () => {
     const buffer = loadBuffer(file, '2024-02-08')
     const isParamFile = (file: string): file is keyof typeof params => file in params
     if (!isParamFile(file)) throw Error('invalid parameter set')
-    const { latitude, longitude, elevation, utc_offset_seconds } = _parse(buffer, params[file])
-    expect({ latitude, longitude, elevation, utc_offset_seconds }).toEqual({
+
+    expect(_parse(buffer, params[file])).toMatchObject({
       latitude: 49.86000061035156,
       longitude: 11.239999771118164,
       elevation: 450,
       utc_offset_seconds: 3600,
+      timezone: 'Europe/Berlin',
+      timezone_abbreviation: 'CET',
     })
   })
 

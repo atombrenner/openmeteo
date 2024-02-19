@@ -3,92 +3,110 @@ import { WeatherApiResponse } from '@openmeteo/sdk/weather-api-response'
 import type { VariablesWithTime } from '@openmeteo/sdk/variables-with-time'
 
 // see https://open-meteo.com/en/docs/dwd-api for a documentation of weather variables
+// scraped from website with: $$('input[name=hourly]').filter(el => !el.value.endsWith('hPa')).map(el => `'${el.value}'`).sort().join('|')
 export type HourlyVariable =
-  | 'temperature_2m'
-  | 'temperature_80m'
-  | 'temperature_120m'
-  | 'temperature_180m'
-  | 'relative_humidity_2m'
-  | 'dew_point_2m'
   | 'apparent_temperature'
-  | 'pressure_mslsurface_pressure'
+  | 'cape'
   | 'cloud_cover'
+  | 'cloud_cover_high'
   | 'cloud_cover_low'
   | 'cloud_cover_mid'
-  | 'cloud_cover_high'
-  | 'wind_speed_10m'
-  | 'wind_speed_80m'
-  | 'wind_speed_120m'
-  | 'wind_speed_180m'
-  | 'wind_direction_10m'
-  | 'wind_direction_80m'
-  | 'wind_direction_120m'
-  | 'wind_direction_180m'
-  | 'wind_gusts_10m'
-  | 'shortwave_radiation'
-  | 'direct_radiationdirect_normal_irradiance'
+  | 'dew_point_2m'
   | 'diffuse_radiation'
-  | 'vapour_pressure_deficit'
-  | 'cape'
-  | 'evapotranspiration'
+  | 'diffuse_radiation_instant'
+  | 'direct_normal_irradiance'
+  | 'direct_normal_irradiance_instant'
+  | 'direct_radiation'
+  | 'direct_radiation_instant'
   | 'et0_fao_evapotranspiration'
-  | 'precipitation'
-  | 'snowfall'
-  | 'precipitation_probability'
-  | 'rain'
-  | 'showers'
-  | 'weather_code'
-  | 'snow_depth'
+  | 'evapotranspiration'
   | 'freezing_level_height'
-  | 'visibility'
-  | 'soil_temperature_0cm'
-  | 'soil_temperature_6cm'
-  | 'soil_temperature_18cm'
-  | 'soil_temperature_54cm'
+  | 'global_tilted_irradiance'
+  | 'global_tilted_irradiance_instant'
+  | 'is_day'
+  | 'lightning_potential'
+  | 'precipitation'
+  | 'pressure_msl'
+  | 'rain'
+  | 'relative_humidity_2m'
+  | 'shortwave_radiation'
+  | 'shortwave_radiation_instant'
+  | 'showers'
+  | 'snow_depth'
+  | 'snowfall'
+  | 'snowfall_height'
   | 'soil_moisture_0_to_1cm'
   | 'soil_moisture_1_to_3cm'
+  | 'soil_moisture_27_to_81cm'
   | 'soil_moisture_3_to_9cm'
   | 'soil_moisture_9_to_27cm'
-  | 'soil_moisture_27_to_81cm'
-  | 'is_day'
-
-export type DailyVariable =
-  | 'temperature_2m_max' // °C Maximum  daily air temperature at 2 meters above ground
-  | 'temperature_2m_min' // °C 	Minimum daily air temperature at 2 meters above ground
-  | 'apparent_temperature_max' //
-  | 'apparent_temperature_min' // 	°C  	Maximum and minimum daily apparent temperature
-  | 'precipitation_sum' // 	mm 	Sum of daily precipitation (including rain, showers and snowfall)
-  | 'rain_sum' // 	mm 	Sum of daily rain
-  | 'showers_sum' // 	mm 	Sum of daily showers
-  | 'snowfall_sum' // 	cm 	Sum of daily snowfall
-  | 'precipitation_hours' // 	hours 	The number of hours with rain
-  | 'weather_code' // 	WMO code 	The most severe weather condition on a given day
-  | 'sunrise' //
-  | 'sunset' // 	iso8601 	Sun rise and set times
-  | 'sunshine_duration' // 	seconds 	The number of seconds of sunshine per day is determined by calculating direct normalized irradiance exceeding 120 W/m², following the WMO definition. Sunshine duration will consistently be less than daylight duration due to dawn and dusk.
-  | 'daylight_duration' // 	seconds 	Number of seconds of daylight per day
-  | 'wind_speed_10m_max' //
-  | 'wind_gusts_10m_max' // 	km/h  	Maximum wind speed and gusts on a day
-  | 'wind_direction_10m_dominant' // 	° 	Dominant wind direction
-  | 'shortwave_radiation_sum' // 	MJ/m² 	The sum of solar radiation on a given day in Megajoules
-  | 'et0_fao_evapotranspiration' // 	mm 	Daily sum of ET₀ Reference Evapotranspiration of a well watered grass field
-
-export type CurrentVariable =
+  | 'soil_temperature_0cm'
+  | 'soil_temperature_18cm'
+  | 'soil_temperature_54cm'
+  | 'soil_temperature_6cm'
+  | 'sunshine_duration'
+  | 'surface_pressure'
+  | 'temperature_120m'
+  | 'temperature_180m'
   | 'temperature_2m'
-  | 'relative_humidity_2m'
+  | 'temperature_80m'
+  | 'terrestrial_radiation'
+  | 'terrestrial_radiation_instant'
+  | 'updraft'
+  | 'vapour_pressure_deficit'
+  | 'weather_code'
+  | 'wind_direction_10m'
+  | 'wind_direction_120m'
+  | 'wind_direction_180m'
+  | 'wind_direction_80m'
+  | 'wind_gusts_10m'
+  | 'wind_speed_10m'
+  | 'wind_speed_120m'
+  | 'wind_speed_180m'
+  | 'wind_speed_80m'
+
+// see https://open-meteo.com/en/docs/dwd-api for a documentation of weather variables
+// scraped from website with: $$('input[name=daily]').map(el => `'${el.value}'`).sort().join('|')
+export type DailyVariable =
+  | 'apparent_temperature_max'
+  | 'apparent_temperature_min'
+  | 'daylight_duration'
+  | 'et0_fao_evapotranspiration'
+  | 'precipitation_hours'
+  | 'precipitation_probability_max'
+  | 'precipitation_sum'
+  | 'rain_sum'
+  | 'shortwave_radiation_sum'
+  | 'showers_sum'
+  | 'snowfall_sum'
+  | 'sunrise'
+  | 'sunset'
+  | 'sunshine_duration'
+  | 'temperature_2m_max'
+  | 'temperature_2m_min'
+  | 'weather_code'
+  | 'wind_direction_10m_dominant'
+  | 'wind_gusts_10m_max'
+  | 'wind_speed_10m_max'
+
+// see https://open-meteo.com/en/docs/dwd-api for a documentation of weather variables
+// scraped from website with: $$('input[name=current]').map(el => `'${el.value}'`).sort().join('|')
+export type CurrentVariable =
   | 'apparent_temperature'
+  | 'cloud_cover'
   | 'is_day'
   | 'precipitation'
+  | 'pressure_msl'
   | 'rain'
+  | 'relative_humidity_2m'
   | 'showers'
   | 'snowfall'
-  | 'weather_code'
-  | 'cloud_cover'
-  | 'pressure_msl'
   | 'surface_pressure'
-  | 'wind_speed_10m'
+  | 'temperature_2m'
+  | 'weather_code'
   | 'wind_direction_10m'
   | 'wind_gusts_10m'
+  | 'wind_speed_10m'
 
 export interface WeatherDataParams<
   H extends HourlyVariable = HourlyVariable,
@@ -102,6 +120,9 @@ export interface WeatherDataParams<
   forecast_days?: number // 0-10, default 7
   past_days?: number // 0 - 92, default 0
   cell_selection?: 'land' | 'sea' | 'nearest'
+  temperature_unit?: 'celsius' | 'fahrenheit'
+  wind_speed_unit?: 'kmh' | 'ms' | 'mph' | 'kn'
+  precipitation_unit?: 'mm' | 'inch'
   hourly?: readonly H[]
   daily?: readonly D[]
   current?: readonly C[]
@@ -120,7 +141,7 @@ export const weatherDataParams = <
 export type RecordWithTime<T extends string, V> = Record<T | 'time', V>
 export type TimeSeries<T extends string> = RecordWithTime<T, number[]>
 export type Current<T extends string> = RecordWithTime<T, number>
-export type Optional<T, V> = [T] extends [never] ? never : V
+export type Optional<T> = [T] extends [never] ? never : T
 
 export interface WeatherData<
   H extends HourlyVariable = never,
@@ -131,9 +152,11 @@ export interface WeatherData<
   longitude: number
   elevation: number
   utc_offset_seconds: number
-  hourly: Optional<H, TimeSeries<H>>
-  daily: Optional<D, TimeSeries<D>>
-  current: Optional<C, Current<C>>
+  timezone: string
+  timezone_abbreviation: string
+  hourly: Optional<TimeSeries<H>>
+  daily: Optional<TimeSeries<D>>
+  current: Optional<Current<C>>
 }
 
 export class RetryableWeatherDataError extends Error {
@@ -161,7 +184,9 @@ export const _fetch = async <
   params: WeatherDataParams<H, D, C>,
   api: string,
 ) => {
-  const searchParams = new URLSearchParams(Object.entries(params).map(([k, v]) => [k, `${v}`]))
+  const searchParams = new URLSearchParams(
+    Object.entries(params).map(([k, v]) => [k, `${v}`] as [string, string]),
+  )
   searchParams.set('format', 'flatbuffers')
   const url = `${api}?${searchParams}`
   let response: Response
@@ -196,8 +221,6 @@ export const _parse = <
     longitude: r.longitude(),
     elevation: r.elevation(),
     utc_offset_seconds: r.utcOffsetSeconds(),
-
-    // TODO: should we include this in the response? they are only set if a timezone was set
     timezone: r.timezone(),
     timezone_abbreviation: r.timezoneAbbreviation(),
   } as unknown as WeatherData<H, D, C>
@@ -219,7 +242,7 @@ export const _parse = <
     params.current.forEach((name, i) => {
       c[name] = current.variables(i)?.value() ?? NaN
     })
-    result.current = c as Optional<C, Current<C>>
+    result.current = c as Optional<Current<C>>
   }
   return result
 }
@@ -227,7 +250,7 @@ export const _parse = <
 export const _parseTimeSeries = <T extends string>(
   ts: VariablesWithTime,
   params: readonly T[],
-): Optional<T, TimeSeries<T>> => {
+): Optional<TimeSeries<T>> => {
   const timeStart = Number(ts.time())
   const timeEnd = Number(ts.timeEnd())
   const interval = Number(ts.interval())
@@ -242,5 +265,5 @@ export const _parseTimeSeries = <T extends string>(
     const getNumber = ['sunrise', 'sunset'].includes(name) ? getTimestamp : getValue
     result[name] = Array.from(length, (_, j) => getNumber(i, j))
   })
-  return result as Optional<T, TimeSeries<T>>
+  return result as Optional<TimeSeries<T>>
 }

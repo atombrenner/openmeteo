@@ -38,6 +38,7 @@ const data = await fetchWeatherData({
 })
 ```
 
+All hourly, daily and current parameters documented by [DWD ICON](https://open-meteo.com/en/docs/dwd-api) are currently supported.
 The weather variables arrays for hourly, daily and current data are typed with string literals,
 so autocompletion just works.
 

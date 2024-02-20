@@ -1,6 +1,6 @@
 {
   "name": "@atombrenner/openmeteo",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Typesafe Open-Meteo Weather API client",
   "keywords": [
     "typescript",

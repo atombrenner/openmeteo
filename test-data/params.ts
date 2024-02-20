@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs'
-import { weatherDataParams } from '../main'
 
 export const makeFilePath = (file: string, date: string) => `test-data/${file}_${date}.fb`
 
@@ -14,22 +13,22 @@ const commonParams = {
 }
 
 export const params = {
-  hourly: weatherDataParams({
+  hourly: {
     ...commonParams,
     hourly: ['apparent_temperature', 'wind_speed_10m', 'temperature_2m', 'temperature_120m'],
-  }),
-  daily: weatherDataParams({
+  } as const,
+  daily: {
     ...commonParams,
     daily: ['temperature_2m_max', 'sunshine_duration', 'sunrise', 'sunset'],
-  }),
-  current: weatherDataParams({
+  } as const,
+  current: {
     ...commonParams,
     current: ['temperature_2m', 'weather_code', 'rain'],
-  }),
-  everything: weatherDataParams({
+  } as const,
+  everything: {
     ...commonParams,
     hourly: ['temperature_2m', 'wind_speed_10m', 'wind_direction_10m', 'rain'],
     daily: ['temperature_2m_max', 'wind_gusts_10m_max', 'wind_direction_10m_dominant', 'rain_sum'],
     current: ['temperature_2m', 'wind_speed_10m', 'wind_direction_10m', 'rain'],
-  }),
+  } as const,
 }

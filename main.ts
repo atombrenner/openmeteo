@@ -113,30 +113,31 @@ export interface WeatherDataParams<
   D extends DailyVariable = DailyVariable,
   C extends CurrentVariable = CurrentVariable,
 > {
+  // location
   latitude: number
   longitude: number
   elevation?: number
+
+  // timezone is optional but recommended
   timezone?: string // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+  // time range in days, relative to today
   forecast_days?: number // 0-10, default 7
   past_days?: number // 0 - 92, default 0
-  cell_selection?: 'land' | 'sea' | 'nearest'
-  temperature_unit?: 'celsius' | 'fahrenheit'
-  wind_speed_unit?: 'kmh' | 'ms' | 'mph' | 'kn'
-  precipitation_unit?: 'mm' | 'inch'
+
+  // array of weather variables
   hourly?: readonly H[]
   daily?: readonly D[]
   current?: readonly C[]
-}
 
-// helper to infer type from object literal
-export const weatherDataParams = <
-  // assigning never as default type makes infer work with optional params
-  H extends HourlyVariable = never,
-  D extends DailyVariable = never,
-  C extends CurrentVariable = never,
->(
-  params: WeatherDataParams<H, D, C>,
-) => params
+  // requested units (defaulting to first )
+  temperature_unit?: 'celsius' | 'fahrenheit'
+  wind_speed_unit?: 'kmh' | 'ms' | 'mph' | 'kn'
+  precipitation_unit?: 'mm' | 'inch'
+
+  // advanced
+  cell_selection?: 'land' | 'sea' | 'nearest'
+}
 
 export type RecordWithTime<T extends string, V> = Record<T | 'time', V>
 export type TimeSeries<T extends string> = RecordWithTime<T, number[]>
@@ -144,16 +145,16 @@ export type Current<T extends string> = RecordWithTime<T, number>
 export type Optional<T> = [T] extends [never] ? never : T
 
 export interface WeatherData<
-  H extends HourlyVariable = never,
-  D extends DailyVariable = never,
-  C extends CurrentVariable = never,
+  H extends HourlyVariable,
+  D extends DailyVariable,
+  C extends CurrentVariable,
 > {
   latitude: number
   longitude: number
   elevation: number
-  utc_offset_seconds: number
   timezone: string
   timezone_abbreviation: string
+  utc_offset_seconds: number
   hourly: Optional<TimeSeries<H>>
   daily: Optional<TimeSeries<D>>
   current: Optional<Current<C>>
@@ -165,25 +166,17 @@ export class RetryableWeatherDataError extends Error {
   }
 }
 
-export const fetchWeatherData = async <
-  // assigning never as default type makes infer work with optional params
-  H extends HourlyVariable = never,
-  D extends DailyVariable = never,
-  C extends CurrentVariable = never,
->(
-  params: WeatherDataParams<H, D, C>,
+export const fetchWeatherData = async <T extends WeatherDataParams>(
+  params: T,
   api = 'https://api.open-meteo.com/v1/forecast',
-): Promise<WeatherData<H, D, C>> => _parse(await _fetch(params, api), params)
-
-export const _fetch = async <
-  // assigning never as default type makes infer work with optional params
-  H extends HourlyVariable = never,
-  D extends DailyVariable = never,
-  C extends CurrentVariable = never,
->(
-  params: WeatherDataParams<H, D, C>,
-  api: string,
 ) => {
+  type H = T extends { hourly?: ReadonlyArray<infer H extends HourlyVariable> } ? H : never
+  type D = T extends { daily?: ReadonlyArray<infer D extends DailyVariable> } ? D : never
+  type C = T extends { current?: ReadonlyArray<infer C extends CurrentVariable> } ? C : never
+  return _parse(await _fetch(params, api), params) as WeatherData<H, D, C>
+}
+
+export const _fetch = async <T extends WeatherDataParams>(params: T, api: string) => {
   const searchParams = new URLSearchParams(
     Object.entries(params).map(([k, v]) => [k, `${v}`] as [string, string]),
   )

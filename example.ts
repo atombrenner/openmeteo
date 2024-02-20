@@ -1,4 +1,4 @@
-import { fetchWeatherData, weatherDataParams } from './main'
+import { fetchWeatherData } from './main'
 
 async function example1() {
   console.log('\nexample 1\n=========')
@@ -22,19 +22,19 @@ async function example1() {
   console.log({ rain0, firstHour: new Date(firstHour * 1000), tempMax })
 }
 
-// type inference also works if you construct the params
+// type inference also works if you construct the params if you use "as const"
 async function example2() {
   console.log('\nExample 2\n=========')
 
   const hourly = ['temperature_2m'] as const // as const is necessary to infer the type later
-  const params = weatherDataParams({
-    hourly,
-    current: ['wind_speed_10m'],
+  const params = {
     latitude: 49.0699764,
     longitude: 11.614277,
     timezone: 'Europe/Berlin',
     forecast_days: 3,
-  })
+    hourly,
+    current: ['wind_speed_10m'],
+  } as const
   const data = await fetchWeatherData(params)
   const temperature = data.hourly.temperature_2m
   // const err = data.hourly.cloud_cover_high[0] // type error
@@ -45,13 +45,13 @@ async function example2() {
 
 async function example3() {
   console.log('\nExample 3\n=========')
-  const params = weatherDataParams({
+  const params = {
     latitude: 49.0699764,
     longitude: 11.614277,
     timezone: 'Europe/Berlin',
     forecast_days: 3,
     daily: ['sunshine_duration', 'sunrise', 'sunset'],
-  })
+  } as const
 
   const data = await fetchWeatherData(params)
 

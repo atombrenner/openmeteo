@@ -90,7 +90,7 @@ There are a few caveats to be aware of:
 Useful commands
 
 - `npm version <major|minor|patch>`
-- `git push --tags` starts the workflow for publishing an new package
-- `npm pack` creates a package, useful for local testing
-- `npm publish --dry-run` check package before publishing
+- `git push --tags` starts the workflow for publishing a new package
+- `npm pack` creates the package, useful for local testing
+- `npm publish --dry-run` checks the package before publishing
 - `npm publish --access public`
